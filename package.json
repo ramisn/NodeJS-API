@@ -1,0 +1,25 @@
+{
+  "name": "nodejs_api",
+  "version": "1.0.0",
+  "description": "A Node Based Webhook that fetches the details from Rails API",
+  "main": "index.js",
+  "scripts": {
+    "start": "node index.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [
+    "railsAPI",
+    "webhook",
+    "nodejs",
+    "ramisn"
+  ],
+  "author": "Ramisn",
+  "license": "ISC",
+  "dependencies": {
+    "apiai": "^2.0.5",
+    "body-parser": "^1.18.2",
+    "express": "^4.16.1",
+    "firebase-functions": "^1.0.3",
+    "request": "^2.72.0"
+  }
+}
