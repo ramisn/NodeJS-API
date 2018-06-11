@@ -30,7 +30,13 @@ server.post('/webhook', (req, res) => {
     } else if (req.body.result.parameters.sp_name != null) {
       var sp_name = req.body.result.parameters.sp_name
       reqUrl = encodeURI(`http://tvslsl-api.herokuapp.com/api/v1/bot_details/?service_provider_name=${sp_name}`);
-    } 
+    } else if ((req.body.result.parameters.vcv_number != null) && (req.body.result.parameters.cwb_no != null)){
+      var vcv_number = req.body.result.parameters.vcv_number
+      var cwb_no = req.body.result.parameters.cwb_no
+      reqUrl = encodeURI(`http://tvslsl-api.herokuapp.com/api/v1/bot_details/?vcv_no=${vcv_number}&cwb=${cwb_no}`);
+    }
+
+
     // else if (req.body.result.parameters.gps_name != null){
     //   var gps_name = req.body.result.parameters.gps_name
     //   reqUrl = encodeURI(`http://tvslsl-api.herokuapp.com/api/v1/bot_details/?gps_provider=${gps_name}`);
@@ -56,15 +62,15 @@ server.post('/webhook', (req, res) => {
                                                      VCV Number -- ${bot_det[0].vcv_no}`;
               let plannedETA = `${bot_det[0].planned_eta}`;
               let actualETA = `${bot_det[0].actual_eta}`;
-              let currentLatLon = `${bot_det[0].CurrentLatLon}`;
-              let currentLat = `${bot_det[0].CurrentLat}`;
-              let currentLon = `${bot_det[0].CurrentLon}`;
-              let originOfVCV = `${bot_det[0].Origin}`;
-              let originAddrOfVCV = `${bot_det[0].OriginAddress}`;
-              let destOfVCV = `${bot_det[0].Destination}`;
-              let destAddrOfVCV = `${bot_det[0].DestAddress}`;
+              let currentLatLon = `${bot_det[0].currentlatlon}`;
+              let currentLat = `${bot_det[0].currentlat}`;
+              let currentLon = `${bot_det[0].currentlon}`;
+              let originOfVCV = `${bot_det[0].origin}`;
+              let originAddrOfVCV = `${bot_det[0].originaddress}`;
+              let destOfVCV = `${bot_det[0].destination}`;
+              let destAddrOfVCV = `${bot_det[0].destaddress}`;
               let isDeviationText = '';
-              let isDeviation = `${bot_det[0].RouteDeviationFlag}`;
+              let isDeviation = `${bot_det[0].routedeviationflag}`;
               
               if (isDeviation == 'NULL'){
                 isDeviationText = `Luckily, no deviation for this path!`;
@@ -72,10 +78,21 @@ server.post('/webhook', (req, res) => {
                 isDeviationText = `Yes, ${isDeviation}`;
               }
               
-              let vehicleNo = `${bot_det[0].VehicleNo}`;
-              let routeCode = `${bot_det[0].RouteCode}`;
-              let timeLeftArrival = `${bot_det[0].DurText}`;
-              let distLeftArrival = `${bot_det[0].DisText}`;
+              let vehicleNo = `${bot_det[0].vehicle_no}`;
+              let routeCode = `${bot_det[0].routecode}`;
+              let timeLeftArrival = `${bot_det[0].durtext}`;
+              let distLeftArrival = `${bot_det[0].distext}`;
+              let cwb = `${bot_det[0].cwb_no}`;
+              let sales_contract = `${bot_det[0].sales_contract}`;
+              let customer_code = `${bot_det[0].customer_code}`;
+              let customer_name = `${bot_det[0].customer_name}`;
+              let item_code = `${bot_det[0].item_code}`;
+              let generating_loc_des = `${bot_det[0].generating_loc_des}`;
+              let destination_loc_des = `${bot_det[0].destination_loc_des}`;
+              let nature_of_movement = `${bot_det[0].nature_of_movement}`;
+              let consignor_name = `${bot_det[0].consignor_name}`;
+              let consignee_name = `${bot_det[0].consignee_name}`;
+              let number_of_package = `${bot_det[0].number_of_package}`;
               
             return res.json({
                 speech: dataToSend,
@@ -98,7 +115,17 @@ server.post('/webhook', (req, res) => {
                          RouteCode: routeCode,
                          TimeLeftArrival: timeLeftArrival,
                          DistLeftArrival: distLeftArrival,
-                        
+                         Cwb: cwb,
+                         SalesContract: sales_contract,
+                         CustomerCode: customer_code,
+                         CustomerName: customer_name,
+                         ItemCode: item_code,
+                         GeneratingLoc: generating_loc_des,
+                         DestinationLoc: destination_loc_des,
+                         NatureOfMove: nature_of_movement,
+                         ConsignorName: consignor_name,
+                         ConsigneeName: consignee_name,
+                         NoP: number_of_package,
                     },
                     lifespan: 5
                 }
