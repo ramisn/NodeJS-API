@@ -57,9 +57,10 @@ server.post('/webhook', (req, res) => {
               console.log(bot_det.length);
               // console.log(bot_det.gps_provider);
               if (bot_det.length > 0) {
-              let dataToSend = `Here is the deatils: GPS Provider -- ${bot_det[0].gps_provider}, 
-                                                     Service Provider Name -- ${bot_det[0].service_provider_name}, 
-                                                     VCV Number -- ${bot_det[0].vcv_no}`;
+              let dataToSend = `Here is the deatils: \n
+                                GPS Provider - ${bot_det[0].gps_provider}\n,
+                                Service Provider Name - ${bot_det[0].service_provider_name},\n
+                                VCV Number -- ${bot_det[0].vcv_no}`;
               let plannedETA = `${bot_det[0].planned_eta}`;
               let actualETA = `${bot_det[0].actual_eta}`;
               let currentLatLon = `${bot_det[0].currentlatlon}`;
