@@ -24,18 +24,34 @@ server.post('/webhook', (req, res) => {
     // console.log(req.body.result.parameters.vcv_number);
     var reqUrl = '';
     // Start
-    if (req.body.result.parameters.vcv_number != null) {
-      var vcv_number = req.body.result.parameters.vcv_number
-      reqUrl = encodeURI(`http://tvslsl-api.herokuapp.com/api/v1/bot_details/?vcv_no=${vcv_number}`);
-    } else if (req.body.result.parameters.sp_name != null) {
-      var sp_name = req.body.result.parameters.sp_name
-      reqUrl = encodeURI(`http://tvslsl-api.herokuapp.com/api/v1/bot_details/?service_provider_name=${sp_name}`);
-    } else if ((req.body.result.parameters.vcv_number != null) && (req.body.result.parameters.cwb_no != null)){
-      var vcv_number = req.body.result.parameters.vcv_number
-      var cwb_no = req.body.result.parameters.cwb_no
-      reqUrl = encodeURI(`http://tvslsl-api.herokuapp.com/api/v1/bot_details/?vcv_no=${vcv_number}&cwb=${cwb_no}`);
-    }
-
+    // if (req.body.result.parameters.vcv_number != null) {
+    //   var vcv_number = req.body.result.parameters.vcv_number
+    //   reqUrl = encodeURI(`http://tvslsl-api.herokuapp.com/api/v1/bot_details/?vcv_no=${vcv_number}`);
+    // } else if (req.body.result.parameters.sp_name != null) {
+    //   var sp_name = req.body.result.parameters.sp_name
+    //   reqUrl = encodeURI(`http://tvslsl-api.herokuapp.com/api/v1/bot_details/?service_provider_name=${sp_name}`);
+    // } else if ((req.body.result.parameters.vcv_number != null) && (req.body.result.parameters.cwb_no != null)){
+    //   var vcv_number = req.body.result.parameters.vcv_number
+    //   var cwb_no = req.body.result.parameters.cwb_no
+    //   reqUrl = encodeURI(`http://tvslsl-api.herokuapp.com/api/v1/bot_details/?vcv_no=${vcv_number}&cwb=${cwb_no}`);
+    // }
+    var cust_code = req.body.result.parameters.customer_code
+    var part_code = req.body.result.parameters.part_code
+    var date = req.body.result.parameters.vcv_date
+    console.log(cust_code);
+    console.log(part_code);
+    console.log(date);
+    // if (req.body.result.parameters.customer_code && req.body.result.parameters.part_code){
+    // // reqUrl = encodeURI(`http://localhost:3000/api/v1/bot_details/?consignor_part_code=26021547&customer_code=LUTGCCHE06`);
+    // reqUrl = encodeURI(`http://localhost:3000/api/v1/bot_details/?consignor_part_code=${part_code}&customer_code=${cust_code}`);
+    // }
+    if (req.body.result.parameters.customer_code && req.body.result.parameters.part_code && req.body.result.parameters.vcv_date){
+      // var cust_code = req.body.result.parameters.customer_code
+      // var part_code = req.body.result.parameters.part_code
+      // var date = req.body.result.parameters.vcv_date
+      reqUrl = encodeURI(`http://tvslsl-api.herokuapp.com/api/v1/bot_details/?consignor_part_code=${part_code}&customer_code=${cust_code}&vcv_date_time=${date}`);
+      // reqUrl = encodeURI(`http://localhost:3000/api/v1/bot_details/?consignor_part_code=${part_code}&customer_code=${cust_code}&vcv_date_time=${date}`);
+    } 
 
     // else if (req.body.result.parameters.gps_name != null){
     //   var gps_name = req.body.result.parameters.gps_name
@@ -55,12 +71,39 @@ server.post('/webhook', (req, res) => {
             // let dataToSend = '';
             // if (bot_det != null){
               console.log(bot_det.length);
-              // console.log(bot_det.gps_provider);
-              if (bot_det.length > 0) {
-              let dataToSend = `Here is the deatils: \n
+
+              // bot_det.forEach(function (value, index) {
+              //   // console.log(value);
+              //   console.log(index);
+              //   // console.log([index]value);
+              // });
+
+              let array_val = [];
+              for (var i in bot_det) {    // don't actually do this
+                // console.log(i);
+                array_val.push(`${bot_det[i].cwb_no}\n`);
+              };
+
+            
+              // if (bot_det.length > 1) {
+
+              //   let dataToSend = `You have ${bot_det.length} CWBs - ${array_val}\n
+              //   Want to know more about these CWB? \n
+              //   Say Yes or No`;
+              // return res.json({
+              //   speech: dataToSend,
+              //   displayText: dataToSend,
+              //   source: 'webhook'
+              //   });
+
+              // }
+
+              if (bot_det.length > 1) {
+              let dataToSend = `Here is the deatils:
+                                You have ${bot_det.length} CWBs on this Truck.
                                 GPS Provider - ${bot_det[0].gps_provider}\n,
                                 Service Provider Name - ${bot_det[0].service_provider_name},\n
-                                VCV Number -- ${bot_det[0].vcv_no}`;
+                                VCV Number - ${bot_det[0].vcv_no}`;
               let plannedETA = `${bot_det[0].planned_eta}`;
               let actualETA = `${bot_det[0].actual_eta}`;
               let currentLatLon = `${bot_det[0].currentlatlon}`;
@@ -74,9 +117,9 @@ server.post('/webhook', (req, res) => {
               let isDeviation = `${bot_det[0].routedeviationflag}`;
               
               if (isDeviation == 'NULL'){
-                isDeviationText = `Luckily, no deviation for this path!`;
+                isDeviationText = `Luckily, No deviation for this path!`;
               } else {
-                isDeviationText = `Yes, ${isDeviation}`;
+                isDeviationText = `Yes, This route have deviation`;
               }
               
               let vehicleNo = `${bot_det[0].vehicle_no}`;
@@ -134,7 +177,9 @@ server.post('/webhook', (req, res) => {
                 source: 'webhook'
             });
             }
+          
         });
+      
     }, (error) => {
         return res.json({
             speech: 'Something went wrong!',
