@@ -55,8 +55,8 @@ server.post('/webhook', (req, res) => {
     console.log(part_code);
     console.log(date);
     if (req.body.result.parameters.customer_code){
-    // reqUrl = encodeURI(`http://localhost:3000/api/v1/bot_details/?consignor_part_code=26021547&customer_code=LUTGCCHE06`);
-    reqUrl = encodeURI(`http://localhost:3000/api/v1/bot_details/?customer_code=${cust_code}`);
+    reqUrl = encodeURI(`http://tvslsl-api.herokuapp.com/api/v1/bot_details/?customer_code=${cust_code}`);
+    // reqUrl = encodeURI(`http://localhost:3000/api/v1/bot_details/?customer_code=${cust_code}`);
     }
     if (req.body.result.parameters.customer_code && req.body.result.parameters.part_code && req.body.result.parameters.vcv_date){
       reqUrl = encodeURI(`http://tvslsl-api.herokuapp.com/api/v1/bot_details/?consignor_part_code=${part_code}&customer_code=${cust_code}&vcv_date_time=${date}`);
