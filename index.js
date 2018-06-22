@@ -59,17 +59,19 @@ server.post('/webhook', (req, res) => {
     // reqUrl = encodeURI(`http://localhost:3000/api/v1/bot_details/?consignor_part_code=${part_code}&customer_code=${cust_code}`);
     // }
     if (req.body.result.parameters.customer_code && req.body.result.parameters.part_code && req.body.result.parameters.vcv_date){
-      // reqUrl = encodeURI(`http://tvslsl-api.herokuapp.com/api/v1/bot_details/?consignor_part_code=${part_code}&customer_code=${cust_code}&vcv_date_time=${date}`);
-      reqUrl = encodeURI(`http://localhost:3000/api/v1/bot_details/?consignor_part_code=${part_code}&customer_code=${cust_code}&vcv_date_time=${date}`);
+      reqUrl = encodeURI(`http://tvslsl-api.herokuapp.com/api/v1/bot_details/?consignor_part_code=${part_code}&customer_code=${cust_code}&vcv_date_time=${date}`);
+      // reqUrl = encodeURI(`http://localhost:3000/api/v1/bot_details/?consignor_part_code=${part_code}&customer_code=${cust_code}&vcv_date_time=${date}`);
       
     } 
     
     if (req.body.result.parameters.customer_code && req.body.result.parameters.part_code && req.body.result.parameters.vcv_date && req.body.result.parameters.cwb_no){
-      reqUrl = encodeURI(`http://localhost:3000/api/v1/bot_details/?consignor_part_code=${part_code}&customer_code=${cust_code}&vcv_date_time=${date}&&cwb_no=${cwb_no}`);
+      // reqUrl = encodeURI(`http://localhost:3000/api/v1/bot_details/?consignor_part_code=${part_code}&customer_code=${cust_code}&vcv_date_time=${date}&cwb_no=${cwb_no}`);
+      reqUrl = encodeURI(`http://tvslsl-api.herokuapp.com/api/v1/bot_details/?consignor_part_code=${part_code}&customer_code=${cust_code}&vcv_date_time=${date}&cwb_no=${cwb_no}`);
     }
 
     if (req.body.result.parameters.customer_code && req.body.result.parameters.part_code && req.body.result.parameters.vcv_date && req.body.result.parameters.vehicle_no){
-      reqUrl = encodeURI(`http://localhost:3000/api/v1/bot_details/?consignor_part_code=${part_code}&customer_code=${cust_code}&vcv_date_time=${date}&&vehicle_no=${vehicle_no}`);
+      // reqUrl = encodeURI(`http://localhost:3000/api/v1/bot_details/?consignor_part_code=${part_code}&customer_code=${cust_code}&vcv_date_time=${date}&vehicle_no=${vehicle_no}`);
+      reqUrl = encodeURI(`http://tvslsl-api.herokuapp.com/api/v1/bot_details/?consignor_part_code=${part_code}&customer_code=${cust_code}&vcv_date_time=${date}&vehicle_no=${vehicle_no}`);
     }
 
 
@@ -90,6 +92,7 @@ server.post('/webhook', (req, res) => {
             // console.log(bot_det.GpsProvider);
             // let dataToSend = '';
             // if (bot_det != null){
+              console.log(bot_det);
               console.log(bot_det.length);
 
               // bot_det.forEach(function (value, index) {
@@ -103,6 +106,18 @@ server.post('/webhook', (req, res) => {
               //   // console.log(i);
               //   array_val.push(`${bot_det[i].cwb_no}\n`);
               // };
+
+              if (bot_det == null || bot_det == 0) {
+
+                let dataToSend = `Something went wrong!. Please try again.`
+                  
+              return res.json({
+                speech: dataToSend,
+                displayText: dataToSend,
+                source: 'webhook'
+                });
+
+              }
 
               if (bot_det.length > 1 && vehicle_no != null) {
 
