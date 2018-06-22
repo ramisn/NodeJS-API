@@ -35,9 +35,22 @@ server.post('/webhook', (req, res) => {
     //   var cwb_no = req.body.result.parameters.cwb_no
     //   reqUrl = encodeURI(`http://tvslsl-api.herokuapp.com/api/v1/bot_details/?vcv_no=${vcv_number}&cwb=${cwb_no}`);
     // }
+
+    // // --- Customer Flow ---
+    // var role_id = req.body.result.parameters.role_id
+    // if (role_id == 1 || role_id == "customer" || role_id == "Customer"){
+    //   let msgToCust = `Hi please help me with your Customer Code and Part Code`;
+    //   return res.json({
+    //             speech: msgToCust,
+    //             displayText: msgToCust,
+    //             source: 'webhook'
+    //         });
+    // }
     var cust_code = req.body.result.parameters.customer_code
     var part_code = req.body.result.parameters.part_code
     var date = req.body.result.parameters.vcv_date
+    var cwb_no = req.body.result.parameters.cwb_no
+    var vehicle_no = req.body.result.parameters.vehicle_no
     console.log(cust_code);
     console.log(part_code);
     console.log(date);
@@ -46,12 +59,19 @@ server.post('/webhook', (req, res) => {
     // reqUrl = encodeURI(`http://localhost:3000/api/v1/bot_details/?consignor_part_code=${part_code}&customer_code=${cust_code}`);
     // }
     if (req.body.result.parameters.customer_code && req.body.result.parameters.part_code && req.body.result.parameters.vcv_date){
-      // var cust_code = req.body.result.parameters.customer_code
-      // var part_code = req.body.result.parameters.part_code
-      // var date = req.body.result.parameters.vcv_date
-      reqUrl = encodeURI(`http://tvslsl-api.herokuapp.com/api/v1/bot_details/?consignor_part_code=${part_code}&customer_code=${cust_code}&vcv_date_time=${date}`);
-      // reqUrl = encodeURI(`http://localhost:3000/api/v1/bot_details/?consignor_part_code=${part_code}&customer_code=${cust_code}&vcv_date_time=${date}`);
+      // reqUrl = encodeURI(`http://tvslsl-api.herokuapp.com/api/v1/bot_details/?consignor_part_code=${part_code}&customer_code=${cust_code}&vcv_date_time=${date}`);
+      reqUrl = encodeURI(`http://localhost:3000/api/v1/bot_details/?consignor_part_code=${part_code}&customer_code=${cust_code}&vcv_date_time=${date}`);
+      
     } 
+    
+    if (req.body.result.parameters.customer_code && req.body.result.parameters.part_code && req.body.result.parameters.vcv_date && req.body.result.parameters.cwb_no){
+      reqUrl = encodeURI(`http://localhost:3000/api/v1/bot_details/?consignor_part_code=${part_code}&customer_code=${cust_code}&vcv_date_time=${date}&&cwb_no=${cwb_no}`);
+    }
+
+    if (req.body.result.parameters.customer_code && req.body.result.parameters.part_code && req.body.result.parameters.vcv_date && req.body.result.parameters.vehicle_no){
+      reqUrl = encodeURI(`http://localhost:3000/api/v1/bot_details/?consignor_part_code=${part_code}&customer_code=${cust_code}&vcv_date_time=${date}&&vehicle_no=${vehicle_no}`);
+    }
+
 
     // else if (req.body.result.parameters.gps_name != null){
     //   var gps_name = req.body.result.parameters.gps_name
@@ -78,32 +98,47 @@ server.post('/webhook', (req, res) => {
               //   // console.log([index]value);
               // });
 
-              let array_val = [];
-              for (var i in bot_det) {    // don't actually do this
-                // console.log(i);
-                array_val.push(`${bot_det[i].cwb_no}\n`);
-              };
+              // let array_val = [];
+              // for (var i in bot_det) {    // don't actually do this
+              //   // console.log(i);
+              //   array_val.push(`${bot_det[i].cwb_no}\n`);
+              // };
 
+              if (bot_det.length > 1 && vehicle_no != null) {
+
+                let dataToSend = `On this vehicle ${bot_det.length} Cargo Way Bills are attached. \n
+                Please select the service options to assist you better: \n
+                  i). CWB / Cargo Way Bill / CWB tracking.`
+                  
+              return res.json({
+                speech: dataToSend,
+                displayText: dataToSend,
+                source: 'webhook'
+                });
+
+              }
             
-              // if (bot_det.length > 1) {
+              else if (bot_det.length > 1) {
 
-              //   let dataToSend = `You have ${bot_det.length} CWBs - ${array_val}\n
-              //   Want to know more about these CWB? \n
-              //   Say Yes or No`;
-              // return res.json({
-              //   speech: dataToSend,
-              //   displayText: dataToSend,
-              //   source: 'webhook'
-              //   });
+                let dataToSend = `You have ${bot_det.length} Cargo Way Bills. \n
+                Please select the service options to assist you better: \n
+                  A. Cargo Way Bill / CWB tracking. \n
+                  B. Vehicle tracking`
+                  
+              return res.json({
+                speech: dataToSend,
+                displayText: dataToSend,
+                source: 'webhook'
+                });
 
-              // }
+              }
 
-              if (bot_det.length > 1) {
-              let dataToSend = `Here is the deatils:
-                                You have ${bot_det.length} CWBs on this Truck.
-                                GPS Provider - ${bot_det[0].gps_provider}\n,
-                                Service Provider Name - ${bot_det[0].service_provider_name},\n
-                                VCV Number - ${bot_det[0].vcv_no}`;
+              if (bot_det.length == 1) {
+              let dataToSend = `Here is the deatils:\
+                                This Partcode: ${bot_det[0].consignor_part_code} is part of Cargo way bill, \
+                                The consignment has ${bot_det[0].number_of_package} Units of this Partcode.`
+                                // GPS Provider - ${bot_det[0].gps_provider}\,
+                                // Service Provider Name - ${bot_det[0].service_provider_name}`;
               let plannedETA = `${bot_det[0].planned_eta}`;
               let actualETA = `${bot_det[0].actual_eta}`;
               let currentLatLon = `${bot_det[0].currentlatlon}`;
@@ -119,7 +154,7 @@ server.post('/webhook', (req, res) => {
               if (isDeviation == 'NULL'){
                 isDeviationText = `Luckily, No deviation for this path!`;
               } else {
-                isDeviationText = `Yes, This route have deviation`;
+                isDeviationText = `Yes, This route have deviation. `;
               }
               
               let vehicleNo = `${bot_det[0].vehicle_no}`;
@@ -130,7 +165,7 @@ server.post('/webhook', (req, res) => {
               let sales_contract = `${bot_det[0].sales_contract}`;
               let customer_code = `${bot_det[0].customer_code}`;
               let customer_name = `${bot_det[0].customer_name}`;
-              let item_code = `${bot_det[0].item_code}`;
+              let item_code = `${bot_det[0].consignor_part_code}`;
               let generating_loc_des = `${bot_det[0].generating_loc_des}`;
               let destination_loc_des = `${bot_det[0].destination_loc_des}`;
               let nature_of_movement = `${bot_det[0].nature_of_movement}`;
