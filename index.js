@@ -28,8 +28,8 @@ server.post('/webhook', (req, res) => {
     var date = req.body.result.parameters.vcv_date
     var cwb_no = req.body.result.parameters.cwb_no
     if (vcv_number) {
-      reqUrl = encodeURI(`http://localhost:3000/api/v1/bot_details/?vcv_no=${vcv_number}`);
-      // reqUrl = encodeURI(`http://tvslsl-api.herokuapp.com/api/v1/bot_details/?vcv_no=${vcv_number}&vcv_date_time=${date}`);
+      // reqUrl = encodeURI(`http://localhost:3000/api/v1/bot_details/?vcv_no=${vcv_number}`);
+      reqUrl = encodeURI(`http://tvslsl-api.herokuapp.com/api/v1/bot_details/?vcv_no=${vcv_number}`);
     } 
 
     if (vcv_number && cwb_no){
