@@ -25,38 +25,21 @@ server.post('/webhook', (req, res) => {
     var reqUrl = '';
     // Start
     var vcv_number = req.body.result.parameters.vcv_number
+    var date = req.body.result.parameters.vcv_date
     var cwb_no = req.body.result.parameters.cwb_no
-    if (req.body.result.parameters.vcv_number) {
-      // reqUrl = encodeURI(`http://localhost:3000/api/v1/bot_details/?vcv_no=${vcv_number}`);
-      reqUrl = encodeURI(`http://tvslsl-api.herokuapp.com/api/v1/bot_details/?vcv_no=${vcv_number}`);
+    if (vcv_number) {
+      reqUrl = encodeURI(`http://localhost:3000/api/v1/bot_details/?vcv_no=${vcv_number}`);
+      // reqUrl = encodeURI(`http://tvslsl-api.herokuapp.com/api/v1/bot_details/?vcv_no=${vcv_number}&vcv_date_time=${date}`);
     } 
 
     if (vcv_number && cwb_no){
     reqUrl = encodeURI(`http://tvslsl-api.herokuapp.com/api/v1/bot_details/?vcv_no=${vcv_number}&cwb_no=${cwb_no}`);
     // reqUrl = encodeURI(`http://localhost:3000/api/v1/bot_details/?vcv_no=${vcv_number}&cwb_no=${cwb_no}`);
     }
-    // else if (req.body.result.parameters.sp_name != null) {
-    //   var sp_name = req.body.result.parameters.sp_name
-    //   reqUrl = encodeURI(`http://tvslsl-api.herokuapp.com/api/v1/bot_details/?service_provider_name=${sp_name}`);
-    // } else if ((req.body.result.parameters.vcv_number != null) && (req.body.result.parameters.cwb_no != null)){
-    //   var vcv_number = req.body.result.parameters.vcv_number
-    //   var cwb_no = req.body.result.parameters.cwb_no
-    //   reqUrl = encodeURI(`http://tvslsl-api.herokuapp.com/api/v1/bot_details/?vcv_no=${vcv_number}&cwb=${cwb_no}`);
-    // }
-
-    // // --- Customer Flow ---
-    // var role_id = req.body.result.parameters.role_id
-    // if (role_id == 1 || role_id == "customer" || role_id == "Customer"){
-    //   let msgToCust = `Hi please help me with your Customer Code and Part Code`;
-    //   return res.json({
-    //             speech: msgToCust,
-    //             displayText: msgToCust,
-    //             source: 'webhook'
-    //         });
-    // }
+    
     var cust_code = req.body.result.parameters.customer_code
     var part_code = req.body.result.parameters.part_code
-    var date = req.body.result.parameters.vcv_date
+    
     var vehicle_no = req.body.result.parameters.vehicle_no
     // console.log(cust_code);
     // console.log(part_code);
@@ -128,20 +111,6 @@ server.post('/webhook', (req, res) => {
                 });
 
               }
-
-              // if (cust_code) {
-
-              //   let dataToSend = `Welcome ${bot_det[0].customer_name}. \
-              //   Want Part Code Tracking?`
-                  
-              // return res.json({
-              //   speech: dataToSend,
-              //   displayText: dataToSend,
-              //   source: 'webhook'
-              //   });
-
-              // }  
-
               
               if (bot_det.length == 1) {
               let dataToSend = `Here is the details:\
@@ -247,6 +216,20 @@ server.post('/webhook', (req, res) => {
                 });
 
               }
+
+              if (bot_det.length > 1 && vcv_number) {
+
+                let dataToSend = `You have ${bot_det.length} Cargo Way Bills attached on this VCV. \n
+                Please select the service options to assist you better: \n
+                  A. Cargo Way Bill / CWB tracking.`
+                  
+              return res.json({
+                speech: dataToSend,
+                displayText: dataToSend,
+                source: 'webhook'
+                });
+
+              }    
 
 
               // if (bot_det.length > 1 && vehicle_no != null) {
